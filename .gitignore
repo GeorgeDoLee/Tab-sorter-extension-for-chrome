@@ -42,6 +42,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Ignore .src/css/output.css
+.src/css/output.css
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
