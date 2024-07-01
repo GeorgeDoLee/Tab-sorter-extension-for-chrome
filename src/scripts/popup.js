@@ -37,27 +37,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const deleteBtn = domainInput.querySelector('button');
         deleteBtn.addEventListener('click', () => {
             domainInput.remove();
+            domainCount--;
             updateDomainIndices();
         });
     }
 
     function updateDomainIndices() {
-        const domainInputs = domainsContainer.querySelectorAll('input[type="text"]');
-        domainCount = 0;
-        domainInputs.forEach((input, index) => {
+        const domainInputs = domainsContainer.querySelectorAll('.relative');
+        domainInputs.forEach((domainInput, index) => {
             const newIndex = index + 1;
-            const parentDiv = input.parentElement.parentElement;
-    
-            const label = parentDiv.querySelector('label');
+            const label = domainInput.querySelector('label');
+            const input = domainInput.querySelector('input');
+            const deleteBtn = domainInput.querySelector('button');
+
+            label.textContent = `Domain ${newIndex}`;
             label.setAttribute('for', `domain${newIndex}`);
-            
-            input.id = `domain${newIndex}`;
-            input.name = `domain${newIndex}`;
-    
-            const deleteBtn = parentDiv.querySelector('button');
-            deleteBtn.setAttribute('data-index', `${newIndex}`);
-    
-            domainCount = newIndex;
+            input.setAttribute('id', `domain${newIndex}`);
+            input.setAttribute('name', `domain${newIndex}`);
+            deleteBtn.setAttribute('data-index', newIndex);
         });
     }
 
@@ -97,11 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.local.get(['preferredOrder'], (result) => {
             const preferredOrder = result.preferredOrder || {};
 
-            if (Object.keys(preferredOrder).length > 0) {
-                Object.entries(preferredOrder).forEach(([domain, index]) => {
+            const sortedPreferences = Object.entries(preferredOrder)
+                .sort((a, b) => a[1] - b[1]);
+
+            if (sortedPreferences.length > 0) {
+                sortedPreferences.forEach(([domain, index]) => {
                     addDomainInput(domain, index);
                 });
-                domainCount = Object.keys(preferredOrder).length;
+                domainCount = sortedPreferences.length;
             } else {
                 addDomainInput();
             }
